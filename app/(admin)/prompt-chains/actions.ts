@@ -99,22 +99,26 @@ export async function createChain(_prev: ChainFormState, fd: FormData): Promise<
   const { source, slug, name, description } = result.values;
 
   const db = await adminDb();
-  const { data, error } = await db.rpc("copy_prompt_chain", {
-    p_source: source,
-    p_slug: slug,
-    p_name: name,
-    p_description: description,
-  });
+  // A blank chain is one plain row: no steps to copy, and no mix row (a missing one reads as 0%)
+  const { data, error } =
+    source === null
+      ? await db.from("prompt_chains").insert({ slug, name, description }).select("id").single<{ id: number }>()
+      : await db.rpc("copy_prompt_chain", {
+          p_source: source,
+          p_slug: slug,
+          p_name: name,
+          p_description: description,
+        });
   if (error) {
     const errors = chainConstraintErrors(error);
     if (errors) return { ok: false, message: FIX_FIELDS, errors };
     if (chainErrorCode(error) === "chain_not_found") return { ok: false, message: FIX_FIELDS, errors: { source: SOURCE_GONE } };
-    console.error("Copying the prompt chain failed", error);
+    console.error("Creating the prompt chain failed", error);
     return { ok: false, message: DB_DOWN };
   }
-  const id = parseId(data);
+  const id = parseId(source === null ? data?.id : data);
   if (id === null) {
-    console.error("Copying the prompt chain returned no id", data);
+    console.error("Creating the prompt chain returned no id", data);
     return { ok: false, message: DB_DOWN };
   }
 

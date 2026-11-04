@@ -193,7 +193,7 @@ export default async function PromptChainPage({ params, searchParams }: PageProp
           </div>
           <p className="mt-1 text-sm text-muted">
             {chain.steps.length === 0
-              ? "This chain has no steps."
+              ? "No steps yet. Add the first one; whichever step is last writes the reviews."
               : `${nouns(chain.steps.length, "call")} to the model per run, plus a fallback call when a step needs one.`}
             {full && ` ${CHAIN_ERRORS.chain_full}`}
           </p>
@@ -299,7 +299,7 @@ function MakeDefault({ chain }: { chain: ChainDetail }) {
 
 const NOTICES: Record<NonNullable<ChainPageQuery["notice"]>, string> = {
   created:
-    "Chain created. This copy is a draft: no roasts use it until you make it the default or give it a share on Chain mix.",
+    "Chain created. It’s a draft: no roasts use it until you make it the default or give it a share on Chain mix.",
   default: "This is now the default chain. Every new roast uses it, and it’s the backup when a picked chain can’t run.",
   added: "Step added.",
   moved: "Step moved.",

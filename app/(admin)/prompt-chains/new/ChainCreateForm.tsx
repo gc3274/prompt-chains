@@ -6,22 +6,28 @@ import SubmitButton from "@/components/SubmitButton";
 import { input } from "@/components/ui";
 import { codePoints } from "@/lib/format";
 import { FORM_INITIAL } from "@/lib/forms";
-import { CHAIN_DESCRIPTION_MAX, CHAIN_NAME_MAX, suggestSlug, type ChainFormState } from "@/lib/prompt-chains";
+import {
+  BLANK_SOURCE,
+  CHAIN_DESCRIPTION_MAX,
+  CHAIN_NAME_MAX,
+  suggestSlug,
+  type ChainFormState,
+} from "@/lib/prompt-chains";
 import { restoreChoices } from "@/lib/restore-choices";
 import { createChain } from "../actions";
 
 type ChainCreateFormProps = {
   sources: { id: number; name: string; isDefault: boolean }[];
-  // The chain to copy: ?from= (Duplicate), else the default
-  sourceId: number;
+  // The chain to copy: ?from= (Duplicate), else the default, else blank
+  initialSource: string;
 };
 
 type Values = { source: string; name: string; slug: string; description: string };
 
-export default function ChainCreateForm({ sources, sourceId }: ChainCreateFormProps) {
+export default function ChainCreateForm({ sources, initialSource }: ChainCreateFormProps) {
   const [state, formAction] = useActionState<ChainFormState, FormData>(createChain, FORM_INITIAL);
   // Controlled so React doesn't reset the fields after a refused submit
-  const [values, setValues] = useState<Values>({ source: String(sourceId), name: "", slug: "", description: "" });
+  const [values, setValues] = useState<Values>({ source: initialSource, name: "", slug: "", description: "" });
   // The slug follows the name until the admin types one of their own
   const [slugEdited, setSlugEdited] = useState(false);
   // The result the admin has typed over since; its errors are stale now
@@ -57,7 +63,11 @@ export default function ChainCreateForm({ sources, sourceId }: ChainCreateFormPr
       <FormField
         id="source"
         label="Start from"
-        hint="The new chain gets a copy of this chain’s steps, prompts and models. The original doesn’t change."
+        hint={
+          values.source === BLANK_SOURCE
+            ? "The new chain starts with no steps. Add them on its page."
+            : "The new chain gets a copy of this chain’s steps, prompts and models. The original doesn’t change."
+        }
         error={errors.source}
       >
         <select
@@ -70,9 +80,10 @@ export default function ChainCreateForm({ sources, sourceId }: ChainCreateFormPr
           aria-describedby={describedBy("source", { hint: true, error: errors.source })}
           className={`${input} sm:max-w-sm`}
         >
+          <option value={BLANK_SOURCE}>Blank: no steps yet</option>
           {sources.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.name}
+              Copy of {s.name}
               {s.isDefault ? " (default)" : ""}
             </option>
           ))}

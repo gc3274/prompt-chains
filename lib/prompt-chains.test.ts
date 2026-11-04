@@ -168,6 +168,17 @@ describe("validateChainCreate", () => {
     });
   });
 
+  it("reads a blank chain, with no source", () => {
+    expect(create({ source: "blank" })).toEqual({
+      ok: true,
+      values: { source: null, slug: "one-pass-v2", name: "One pass, v2", description: "Tries a shorter prompt." },
+    });
+  });
+
+  it.each(["Blank", "copy"])("refuses %j, which is neither blank nor a chain id", (source) => {
+    expect(create({ source })).toEqual({ ok: false, errors: { source: CHAIN_RULES.source } });
+  });
+
   it("collapses whitespace in the name and description", () => {
     expect(create({ name: "  One   pass ", description: "Two\nlines" })).toMatchObject({
       ok: true,

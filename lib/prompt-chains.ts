@@ -62,7 +62,7 @@ export type ChainField = "source" | "name" | "slug" | "description";
 export type ChainFormState = FormState<ChainField>;
 
 export const CHAIN_RULES: Record<ChainField, string> = {
-  source: "Choose a chain to start from.",
+  source: "Choose a chain to start from, or start blank.",
   name: `Write 1 to ${CHAIN_NAME_MAX} characters.`,
   slug: "Use 2 to 40 lowercase letters, digits or hyphens.",
   description: `Write 1 to ${CHAIN_DESCRIPTION_MAX} characters.`,
@@ -72,8 +72,11 @@ export const CHAIN_SLUG_TAKEN = "Another chain already uses this slug.";
 export const SOURCE_GONE = "That chain no longer exists. Choose another.";
 
 export type ChainDetails = { name: string; description: string };
-// The arguments copy_prompt_chain takes, minus the p_ prefix
-export type ChainCreate = ChainDetails & { source: number; slug: string };
+// The value of "Start from" for a chain with no steps yet
+export const BLANK_SOURCE = "blank";
+// The arguments copy_prompt_chain takes, minus the p_ prefix. A null source is a
+// blank chain, inserted as a plain row instead.
+export type ChainCreate = ChainDetails & { source: number | null; slug: string };
 
 function readDetails(fd: FormData, errors: Errors<ChainField>): ChainDetails {
   const name = readText(fd, "name");
@@ -94,12 +97,13 @@ export function validateChainDetails(fd: FormData): Result<ChainDetails, ChainFi
 // A new chain is always a copy of another one's steps
 export function validateChainCreate(fd: FormData): Result<ChainCreate, ChainField> {
   const errors: Errors<ChainField> = {};
-  const source = parseId(fd.get("source"));
-  if (source === null) errors.source = CHAIN_RULES.source;
+  const blank = fd.get("source") === BLANK_SOURCE;
+  const source = blank ? null : parseId(fd.get("source"));
+  if (!blank && source === null) errors.source = CHAIN_RULES.source;
   const slug = readText(fd, "slug");
   if (!CHAIN_SLUG_RE.test(slug)) errors.slug = CHAIN_RULES.slug;
   const details = readDetails(fd, errors);
-  return done({ ...details, source: source ?? 0, slug }, errors);
+  return done({ ...details, source, slug }, errors);
 }
 
 // What the new chain form fills the slug in with while the admin hasn't typed
