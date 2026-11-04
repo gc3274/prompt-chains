@@ -153,6 +153,11 @@ export default async function PromptChainPage({ params, searchParams }: PageProp
             Runs that used this chain
           </Link>
         </Fact>
+        <Fact term="Media">
+          <Link href={hrefWith("/media", {}, { chain: chain.id })} className={textLink}>
+            See what it made
+          </Link>
+        </Fact>
       </dl>
 
       {chain.problems.length > 0 && (

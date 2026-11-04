@@ -1,6 +1,6 @@
 // Shared by server code and tests, so nothing here may touch the server,
 // Supabase or env. The rules for running one chosen chain on one photo
-// (/generate) and for reading a run's result back (/runs/[id]).
+// (/generate) and for reading a run's result back (/runs/[id] and /media).
 import { isUuid } from "@/lib/captions";
 import { parseId } from "@/lib/forms";
 import { budgetState } from "@/lib/limits";
@@ -145,4 +145,10 @@ export function readResult<A extends Answer>(
       return critic ? [{ ...r, critic }] : [];
     }),
   };
+}
+
+// The topics a page of runs needs a panel for, each once and in first-seen
+// order, so a page reads each panel once rather than once per run
+export function panelTopics(runs: readonly { topic: string | null }[]): Topic[] {
+  return [...new Set(runs.flatMap((r) => parseTopic(r.topic) ?? []))];
 }

@@ -2,15 +2,15 @@ import "server-only";
 import { IMAGE_BUCKET } from "@/lib/captions";
 import type { FallbackReason, ResponseStatus } from "@/lib/chains";
 import { tally, type CallUsage, type Tally } from "@/lib/limits";
-import { emptyPastEnd, rangeFor } from "@/lib/params";
+import { emptyPastEnd, MEDIA_PER_PAGE, rangeFor, type MediaQuery } from "@/lib/params";
 import type { RequestQuery, RequestSource, RequestStatus } from "@/lib/requests";
 import { adminDb } from "@/lib/supabase/admin";
 
-// Reads for the run log: generation_requests (/runs) with their llm_responses.
-// Both are written only by the roast pipeline (lib/data/generation.ts here,
-// lib/generation.ts in the main app and the admin's copy), so there are no
-// writes here. Every read throws on error, so a page never shows half-loaded
-// rows as real.
+// Reads for the run log: generation_requests (/runs, /media) with their
+// llm_responses. Both are written only by the roast pipeline
+// (lib/data/generation.ts here, lib/generation.ts in the main app and the
+// admin's copy), so there are no writes here. Every read throws on error, so a
+// page never shows half-loaded rows as real.
 
 const fail = (what: string, error: { message: string }) => new Error(`${what} failed: ${error.message}`);
 
@@ -257,5 +257,68 @@ export async function getRequest(id: string): Promise<RequestDetail | null> {
       temperature: toNumber(r.temperature),
       responseText: r.response_text,
     })),
+  };
+}
+
+type MediaListRow = Pick<
+  RequestListRow,
+  "id" | "source" | "image_id" | "topic" | "prompt_chain_id" | "status" | "error" | "created_at" | "prompt_chains" | "images"
+> & {
+  llm_responses: { id: string; step_order: number; status: ResponseStatus; response_text: string | null; created_at: string }[] | null;
+};
+
+export type MediaRow = Pick<
+  RequestRow,
+  "id" | "createdAt" | "source" | "status" | "topic" | "chainId" | "chainName" | "error" | "imageId" | "imageUrl"
+> & {
+  // Its model calls in the order they were made, so lib/runs.ts readResult can
+  // find the answer that holds the reviews
+  responses: { stepOrder: number; status: ResponseStatus; responseText: string | null }[];
+};
+
+// What the chains made: runs that succeeded, newest first. Read the same way
+// for every source, since a run from Generate keeps its reviews only in the log.
+export async function listMedia(q: MediaQuery): Promise<{ rows: MediaRow[]; total: number }> {
+  const db = await adminDb();
+
+  let query = db
+    .from("generation_requests")
+    .select(
+      "id, source, image_id, topic, prompt_chain_id, status, error, created_at, prompt_chains(id, name), images(id, image_path), llm_responses(id, step_order, status, response_text, created_at)",
+      { count: "exact" },
+    )
+    .eq("status", "succeeded");
+  if (q.chain !== null) query = query.eq("prompt_chain_id", q.chain);
+
+  const [from, to] = rangeFor(q.page, MEDIA_PER_PAGE);
+  // id last, so pages never overlap when two runs share a timestamp
+  const { data, error, count } = emptyPastEnd(
+    await query
+      .order("created_at", { ascending: false })
+      .order("id")
+      .range(from, to)
+      .overrideTypes<MediaListRow[], { merge: false }>(),
+  );
+  if (error) throw fail("Media", error);
+
+  return {
+    rows: (data ?? []).map((r) => ({
+      id: r.id,
+      createdAt: r.created_at,
+      source: r.source,
+      status: r.status,
+      topic: r.topic,
+      chainId: r.prompt_chain_id,
+      chainName: r.prompt_chains?.name ?? null,
+      error: r.error,
+      imageId: r.image_id,
+      imageUrl: photoUrl(db, r.images),
+      responses: [...(r.llm_responses ?? [])].sort(byCreated).map((c) => ({
+        stepOrder: c.step_order,
+        status: c.status,
+        responseText: c.response_text,
+      })),
+    })),
+    total: count ?? 0,
   };
 }

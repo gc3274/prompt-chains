@@ -8,11 +8,13 @@ type PaginationProps = {
   query: Record<string, ParamValue>;
   page: number;
   total: number;
+  // Rows per page, when the list doesn't use PAGE_SIZE
+  pageSize?: number;
 };
 
 // Previous / next links built with hrefWith, so they always target a real route
-export default function Pagination({ pathname, query, page, total }: PaginationProps) {
-  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+export default function Pagination({ pathname, query, page, total, pageSize = PAGE_SIZE }: PaginationProps) {
+  const pages = Math.max(1, Math.ceil(total / pageSize));
   if (pages <= 1 && page <= 1) return null;
 
   // Past the end (a hand-typed ?page=), Previous goes back to the last real page

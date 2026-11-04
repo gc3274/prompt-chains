@@ -16,6 +16,7 @@ export const ADMIN_NAV_GROUPS: readonly NavGroup[] = [
     items: [
       { href: "/generate", label: "Run a chain" },
       { href: "/runs", label: "Runs" },
+      { href: "/media", label: "Media" },
     ],
   },
 ];
