@@ -1,9 +1,12 @@
 // Search params for the list pages. Every value is parsed against a fixed set
 // or pattern, so nothing raw reaches a PostgREST filter, and every link the
 // pages build goes through hrefWith, so it targets a real route.
+import { parseId } from "@/lib/forms";
 
 export const PAGE_SIZE = 25;
 export const MAX_PAGE = 1000;
+// Cards on one page of /media; each holds a photo and its reviews
+export const MEDIA_PER_PAGE = 12;
 
 export type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -19,9 +22,19 @@ export function parsePage(v: unknown): number {
 }
 
 // Inclusive bounds for .range()
-export function rangeFor(page: number): [number, number] {
+export function rangeFor(page: number, size = PAGE_SIZE): [number, number] {
   const p = parsePage(page);
-  return [(p - 1) * PAGE_SIZE, p * PAGE_SIZE - 1];
+  return [(p - 1) * size, p * size - 1];
+}
+
+export type MediaQuery = {
+  // A prompt chain id
+  chain: number | null;
+  page: number;
+};
+
+export function parseMediaQuery(sp: SearchParams): MediaQuery {
+  return { chain: parseId(sp.chain), page: parsePage(sp.page) };
 }
 
 type PageResult = {

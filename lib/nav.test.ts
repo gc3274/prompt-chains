@@ -16,13 +16,14 @@ describe("ADMIN_NAV_GROUPS", () => {
         [
           ["Run a chain", "/generate"],
           ["Runs", "/runs"],
+          ["Media", "/media"],
         ],
       ],
     ]);
   });
 
   it("flattens to ADMIN_NAV with no repeated href", () => {
-    expect(ADMIN_NAV).toHaveLength(4);
+    expect(ADMIN_NAV).toHaveLength(5);
     expect(new Set(ADMIN_NAV.map((i) => i.href)).size).toBe(ADMIN_NAV.length);
   });
 });
@@ -58,6 +59,7 @@ describe("isActive", () => {
       "/generate",
       "/runs",
       "/runs/x",
+      "/media",
     ];
     for (const p of routes) {
       expect(ADMIN_NAV.filter((i) => isActive(p, i.href)), p).toHaveLength(1);

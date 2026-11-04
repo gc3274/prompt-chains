@@ -15,6 +15,7 @@ Stack: Next.js 16.3.5 (App Router, `proxy.ts`), React 19, Tailwind 4, Supabase (
 | Edit prompt chain steps | `/prompt-chains/[id]/steps/[stepId]`, with a preview of the exact prompt it would send, filled in with a real topic's critics, terms and examples |
 | Reorder the steps of a prompt chain | Move up and Move down on each step of `/prompt-chains/[id]`. A move runs in one transaction, so the steps never end up out of order |
 | Generate media based on a prompt chain | `/generate`: pick a chain and a photo, and the chain runs on it for that topic's whole panel of critics, the way a post from the main app would. `/runs/[id]` then shows the reviews it wrote, and every step's model, prompts, answer, time, tokens and cost. **Run again** repeats it, so you can edit a step and compare |
+| View the media a specific prompt chain made | `/media`: what the chains made, newest first. Each run that succeeded shows its photo, its chain, where it ran (App for the main app, Admin for Generate here or the admin), its topic and date, and each critic's review, score and tip. Pick a chain to see only its runs; **See what it made** on a chain's page opens it that way |
 
 Also here:
 - Edit a chain's details (`/prompt-chains/[id]/edit`), delete a chain or a step, and **Make default**.
@@ -22,7 +23,7 @@ Also here:
 - `/runs`: every run of every chain, newest first, filtered by status, source and chain. That includes posts from the main app, so a chain's real runs can be compared with test runs.
 
 Rules it keeps:
-- **A run from Generate posts nothing.** Its reviews are never saved as roasts, so the photo's owner never sees them. They are read back from the run's log (`llm_responses`) on its page.
+- **A run from Generate posts nothing.** Its reviews are never saved as roasts, so the photo's owner never sees them. They are read back from the run's log (`llm_responses`) on its page and under `/media`, which reads every run that way, from the main app too.
 - **A run uses the chain you picked, or nothing.** Unlike a post from the main app, it never swaps in the default chain: a chain that can't run is refused, with what to fix.
 - **Runs respect the main app's daily budget.** Their model calls count toward it (it is set in the admin under Limits & cost), so Generate refuses to run once it is used up, or when it can't be checked. They are logged as source `admin`, so they never use up anyone's daily posts.
 - **A live chain must stay runnable.** A live chain is the default, or one with a share of the mix. A step change that would break it is refused, with the problems listed. To restructure one, duplicate it, change the copy (a draft, which saves in any state), test it under Generate, then make the copy the default.
@@ -44,6 +45,7 @@ The tables and SQL functions come from the main app's migrations [`2026102812000
 | `/chain-mix` | Superadmin | The mix, saved in one write |
 | `/generate` | Superadmin | Run a chain on a photo. `maxDuration = 60` for the model calls |
 | `/runs`, `/runs/[id]` | Superadmin | The run log, and one run's reviews and steps |
+| `/media` | Superadmin | What each chain made: the photos and the reviews, filtered by chain |
 
 ## Access control
 

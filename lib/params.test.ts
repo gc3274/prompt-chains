@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { emptyPastEnd, hrefWith, PAGE_SIZE, parsePage, rangeFor } from "@/lib/params";
+import {
+  emptyPastEnd,
+  hrefWith,
+  MEDIA_PER_PAGE,
+  PAGE_SIZE,
+  parseMediaQuery,
+  parsePage,
+  rangeFor,
+} from "@/lib/params";
 
 describe("parsePage", () => {
   it("defaults to 1 when missing or unreadable", () => {
@@ -37,6 +45,35 @@ describe("rangeFor", () => {
   it("never returns a negative range", () => {
     expect(rangeFor(0)).toEqual([0, 24]);
     expect(rangeFor(Number.NaN)).toEqual([0, 24]);
+  });
+
+  it("takes another page size", () => {
+    expect(MEDIA_PER_PAGE).toBe(12);
+    expect(rangeFor(1, MEDIA_PER_PAGE)).toEqual([0, 11]);
+    expect(rangeFor(3, MEDIA_PER_PAGE)).toEqual([24, 35]);
+    expect(rangeFor(0, MEDIA_PER_PAGE)).toEqual([0, 11]);
+  });
+});
+
+describe("parseMediaQuery", () => {
+  it("reads the chain and the page", () => {
+    expect(parseMediaQuery({ chain: "2", page: "3" })).toEqual({ chain: 2, page: 3 });
+  });
+
+  it.each([
+    [{}, { chain: null, page: 1 }],
+    [{ chain: "0" }, { chain: null, page: 1 }],
+    [{ chain: "-1" }, { chain: null, page: 1 }],
+    [{ chain: "1,2" }, { chain: null, page: 1 }],
+    [{ chain: "two", page: "x" }, { chain: null, page: 1 }],
+    [{ chain: ["4", "5"], page: ["2", "9"] }, { chain: 4, page: 2 }],
+  ])("%j reads as %j", (sp, expected) => {
+    expect(parseMediaQuery(sp)).toEqual(expected);
+  });
+
+  it("links back to itself through hrefWith", () => {
+    expect(hrefWith("/media", parseMediaQuery({ chain: "2", page: "3" }))).toBe("/media?chain=2&page=3");
+    expect(hrefWith("/media", parseMediaQuery({ chain: "bad" }))).toBe("/media");
   });
 });
 

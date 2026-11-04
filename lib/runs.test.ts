@@ -6,6 +6,7 @@ import {
   finalAnswer,
   initialChain,
   isJpeg,
+  panelTopics,
   parseGenerateQuery,
   parseRunForm,
   photoRange,
@@ -167,5 +168,17 @@ describe("readResult", () => {
       kind: "unreadable",
     });
     expect(readResult({ status: "succeeded", responses: [] }, critics)).toEqual({ kind: "unreadable" });
+  });
+});
+
+describe("panelTopics", () => {
+  it("lists each known topic once, in the order the runs first use it", () => {
+    const runs = [{ topic: "fit" }, { topic: "food" }, { topic: "fit" }, { topic: "food" }, { topic: "art" }];
+    expect(panelTopics(runs)).toEqual(["fit", "food", "art"]);
+  });
+
+  it("skips runs with no topic or one it doesn't know", () => {
+    expect(panelTopics([{ topic: null }, { topic: "legacy" }, { topic: "room" }])).toEqual(["room"]);
+    expect(panelTopics([])).toEqual([]);
   });
 });
