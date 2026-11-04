@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Light-only admin theme: the judges' table under house lights */
+@theme {
+  --color-canvas: #f3f4f7;
+  --color-surface: #ffffff;
+  --color-ink: #17171f;
+  --color-muted: #5d6070;
+  --color-line: #e2e4ea;
+  --color-accent: #6d28d9;
+  --color-danger: #be123c;
+  --color-lime: #c4ff3d;
+
+  /* Chart palette, checked for contrast on white */
+  --color-critic: #2a78d6;
+  --color-crowd: #eb6834;
+  --color-negative: #e34948;
+  --color-deemph: #c3c6cf;
+  --color-grid: #eceef2;
+  --color-mid: #f0efec;
+
+  --font-display: var(--font-bricolage);
+  --font-sans: var(--font-geist-sans);
+}
+
+:root {
+  color-scheme: light;
+}
