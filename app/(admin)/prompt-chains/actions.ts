@@ -89,8 +89,9 @@ function stepWriteFailure(what: string, error: { code?: string; message?: string
 
 // Chains --------------------------------------------------------------------
 
-// A copy of another chain's steps under a new slug, with a share of 0, so no
-// roast uses it until an admin makes it the default or gives it a share
+// A copy of another chain's steps under a new slug, or a blank chain, with a
+// share of 0, so no roast uses it until an admin makes it the default or gives
+// it a share
 export async function createChain(_prev: ChainFormState, fd: FormData): Promise<ChainFormState> {
   await requireSuperadmin();
 

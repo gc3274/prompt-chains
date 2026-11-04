@@ -94,7 +94,7 @@ export function validateChainDetails(fd: FormData): Result<ChainDetails, ChainFi
   return done(details, errors);
 }
 
-// A new chain is always a copy of another one's steps
+// A new chain is a copy of another one's steps, or blank with none
 export function validateChainCreate(fd: FormData): Result<ChainCreate, ChainField> {
   const errors: Errors<ChainField> = {};
   const blank = fd.get("source") === BLANK_SOURCE;

@@ -70,7 +70,8 @@ export default function StepForm({ chainId, stepCount, models, step }: StepFormP
       position: String(Math.max(stepCount, 1)),
       description: step?.description ?? "",
       input_type: step?.inputType ?? "image",
-      output_type: step?.outputType ?? "text",
+      // A blank chain's first step is also its last, so it writes the reviews
+      output_type: step?.outputType ?? (stepCount === 0 ? "roast_json" : "text"),
       llm_model_id: String(step?.modelId ?? firstCallable?.id ?? ""),
       temperature: step ? (step.temperature === null ? "" : String(step.temperature)) : "1",
       system_prompt: step?.systemPrompt ?? "",

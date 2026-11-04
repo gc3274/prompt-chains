@@ -19,6 +19,13 @@ function applyTheme(theme: Theme) {
 // theme on the server. Not inside any form, so a form reset never touches it.
 export default function ThemeSwitch({ initial }: { initial: Theme }) {
   const [theme, setTheme] = useState(initial);
+  // A save re-renders <html> from the cookie, which another tab may have changed
+  // since; follow it so the switch never shows a different pick from the page
+  const [rendered, setRendered] = useState(initial);
+  if (initial !== rendered) {
+    setRendered(initial);
+    setTheme(initial);
+  }
 
   function choose(next: Theme) {
     setTheme(next);
@@ -32,7 +39,7 @@ export default function ThemeSwitch({ initial }: { initial: Theme }) {
         {THEMES.map((t) => (
           <label
             key={t}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:text-ink has-checked:bg-surface has-checked:text-ink has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent motion-reduce:transition-none"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:text-ink has-checked:bg-accent/10 has-checked:text-accent has-checked:ring-1 has-checked:ring-accent/40 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent motion-reduce:transition-none"
           >
             <input
               type="radio"
