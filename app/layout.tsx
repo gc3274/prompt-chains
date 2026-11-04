@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
+import { readTheme } from "@/lib/read-theme";
+import { themeAttribute } from "@/lib/theme";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -20,9 +22,15 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Rendered on the server from the cookie, so the first paint is already in the right theme
+  const theme = await readTheme();
   return (
-    <html lang="en" className={`${bricolage.variable} ${geistSans.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      data-theme={themeAttribute(theme)}
+      className={`${bricolage.variable} ${geistSans.variable} h-full antialiased`}
+    >
       <body className="flex min-h-full flex-col bg-canvas font-sans text-ink">{children}</body>
     </html>
   );

@@ -6,7 +6,7 @@ export default function Wordmark() {
       <span className="font-display text-lg leading-tight font-bold tracking-tight">
         Deconstructive Criticism
       </span>
-      <span className="rounded-full bg-lime px-2 py-0.5 text-xs font-semibold text-ink">Prompt chains</span>
+      <span className="rounded-full bg-lime px-2 py-0.5 text-xs font-semibold text-on-lime">Prompt chains</span>
     </span>
   );
 }

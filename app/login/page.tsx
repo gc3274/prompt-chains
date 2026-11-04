@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Wordmark from "@/components/Wordmark";
 import { card, errorBox } from "@/components/ui";
+import ThemeSwitch from "@/components/ThemeSwitch";
 import { getViewer } from "@/lib/dal";
+import { readTheme } from "@/lib/read-theme";
 import GoogleSignInButton from "./GoogleSignInButton";
 
 export const metadata: Metadata = {
@@ -18,6 +20,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   // Only used as a flag; the raw value is never shown
   const { error } = await searchParams;
   const failed = Boolean(error);
+  const theme = await readTheme();
 
   return (
     <main className="flex flex-1 items-center justify-center px-4 py-16">
@@ -30,6 +33,11 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           Build, edit and test the prompt chains behind every roast. For superadmins only: use the
           Google account that has admin access.
         </p>
+        <ul className="mt-4 flex list-disc flex-col gap-1 pl-5 text-sm">
+          <li>Write a chain’s steps and put them in order.</li>
+          <li>Run a chain on a photo and read every step’s answer.</li>
+          <li>See everything a chain has made.</li>
+        </ul>
 
         {failed && (
           <div role="alert" className={`${errorBox} mt-6`}>
@@ -45,6 +53,10 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           This sign-in is separate from the main app and the admin, so you may need to sign in here
           too.
         </p>
+
+        <div className="mt-6 border-t border-line pt-4">
+          <ThemeSwitch initial={theme} />
+        </div>
       </div>
     </main>
   );

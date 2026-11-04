@@ -61,7 +61,7 @@ export default function ConfirmDelete({ action, fields, noun, warning, blockedRe
         ref={dialogRef}
         aria-labelledby={`${uid}-title`}
         aria-describedby={`${uid}-warning`}
-        className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-line bg-surface p-6 text-ink backdrop:bg-ink/40"
+        className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-line bg-surface p-6 text-ink backdrop:bg-scrim/50"
       >
         <h2 id={`${uid}-title`} className="text-lg font-semibold tracking-tight">
           Delete this {noun}?

@@ -3,9 +3,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
 import SubmitButton from "@/components/SubmitButton";
+import ThemeSwitch from "@/components/ThemeSwitch";
 import Wordmark from "@/components/Wordmark";
 import { button, card } from "@/components/ui";
 import { getViewer } from "@/lib/dal";
+import { readTheme } from "@/lib/read-theme";
 
 export const metadata: Metadata = {
   title: "No access",
@@ -20,6 +22,7 @@ export default async function NotAuthorizedPage() {
 
   // null means the flag couldn't be read, which is not the same as "no"
   const checkFailed = viewer.isSuperadmin === null;
+  const theme = await readTheme();
 
   return (
     <main className="flex flex-1 items-center justify-center px-4 py-16">
@@ -66,6 +69,10 @@ export default async function NotAuthorizedPage() {
         <p className="mt-4 text-xs text-muted">
           Wrong account? Sign out, then pick another Google account.
         </p>
+
+        <div className="mt-6 border-t border-line pt-4">
+          <ThemeSwitch initial={theme} />
+        </div>
       </div>
     </main>
   );

@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
-/* Light-only admin theme: the judges' table under house lights */
+/* One set of tokens, three themes. Light is the judges' table under house
+   lights, dark is the same table after hours. data-theme on <html> holds the
+   viewer's pick (lib/theme.ts); without it the system setting decides. Pages
+   only use these tokens, never raw colors, so every page follows the theme. */
 @theme {
   --color-canvas: #f3f4f7;
   --color-surface: #ffffff;
@@ -10,14 +13,17 @@
   --color-accent: #6d28d9;
   --color-danger: #be123c;
   --color-lime: #c4ff3d;
-
-  /* Chart palette, checked for contrast on white */
-  --color-critic: #2a78d6;
-  --color-crowd: #eb6834;
-  --color-negative: #e34948;
-  --color-deemph: #c3c6cf;
-  --color-grid: #eceef2;
-  --color-mid: #f0efec;
+  /* Text on a filled accent, danger or lime shape */
+  --color-on-accent: #ffffff;
+  --color-on-danger: #ffffff;
+  --color-on-lime: #17171f;
+  /* Behind an open dialog, in either theme */
+  --color-scrim: #000000;
+  /* Google's sign-in button comes in a light and a dark version */
+  --color-google: #ffffff;
+  --color-google-hover: #f8f9fa;
+  --color-google-ink: #1f1f1f;
+  --color-google-line: #747775;
 
   --font-display: var(--font-bricolage);
   --font-sans: var(--font-geist-sans);
@@ -25,4 +31,43 @@
 
 :root {
   color-scheme: light;
+}
+
+/* The dark values, twice: once when picked, once when the system asks for dark
+   and the viewer didn't pick light. Keep the two blocks the same. Each text
+   color keeps at least 4.5:1 on canvas and surface. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-canvas: #0e0f15;
+  --color-surface: #181922;
+  --color-ink: #ececf2;
+  --color-muted: #a0a3b5;
+  --color-line: #2c2e3b;
+  --color-accent: #a78bfa;
+  --color-danger: #fb7185;
+  --color-on-accent: #17171f;
+  --color-on-danger: #17171f;
+  --color-google: #131314;
+  --color-google-hover: #1f1f22;
+  --color-google-ink: #e3e3e3;
+  --color-google-line: #8e918f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-canvas: #0e0f15;
+    --color-surface: #181922;
+    --color-ink: #ececf2;
+    --color-muted: #a0a3b5;
+    --color-line: #2c2e3b;
+    --color-accent: #a78bfa;
+    --color-danger: #fb7185;
+    --color-on-accent: #17171f;
+    --color-on-danger: #17171f;
+    --color-google: #131314;
+    --color-google-hover: #1f1f22;
+    --color-google-ink: #e3e3e3;
+    --color-google-line: #8e918f;
+  }
 }

@@ -10,10 +10,10 @@ export type ButtonSize = "md" | "sm";
 const buttonBase = `inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full font-medium transition-colors motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`;
 
 const buttonVariants: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-white hover:bg-accent/90",
+  primary: "bg-accent text-on-accent hover:bg-accent/90",
   secondary: "border border-line bg-surface text-ink hover:border-muted/40 hover:bg-canvas",
   ghost: "text-muted hover:bg-canvas hover:text-ink",
-  danger: "bg-danger text-white hover:bg-danger/90",
+  danger: "bg-danger text-on-danger hover:bg-danger/90",
 };
 
 const buttonSizes: Record<ButtonSize, string> = {

@@ -1,5 +1,5 @@
 // Copied from gc3274/hw1@3eb3337 app/login/GoogleSignInButton.tsx; keep in sync
-// Only the sign-in logic is shared; restyled as Google's light button for the admin theme
+// Only the sign-in logic is shared; styled as Google's own button, light or dark with the theme
 "use client";
 
 import { useEffect, useState } from "react";
@@ -69,7 +69,7 @@ export default function GoogleSignInButton() {
         type="button"
         onClick={signIn}
         disabled={pending}
-        className={`flex w-full cursor-pointer items-center justify-center gap-3 rounded-full border border-[#747775] bg-white px-4 py-2.5 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#f8f9fa] motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-70 ${focusRing}`}
+        className={`flex w-full cursor-pointer items-center justify-center gap-3 rounded-full border border-google-line bg-google px-4 py-2.5 text-sm font-medium text-google-ink transition-colors hover:bg-google-hover motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-70 ${focusRing}`}
       >
         {pending ? <Spinner className="size-5" /> : <GoogleLogo />}
         {pending ? "Redirecting to Google…" : "Sign in with Google"}

@@ -2,24 +2,27 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOut } from "@/app/auth/actions";
 import { ADMIN_NAV_GROUPS } from "@/lib/nav";
+import type { Theme } from "@/lib/theme";
 import NavLink from "./NavLink";
 import NavToggle from "./NavToggle";
 import SubmitButton from "./SubmitButton";
+import ThemeSwitch from "./ThemeSwitch";
 import Wordmark from "./Wordmark";
 import { focusRing } from "./ui";
 
 type AdminShellProps = {
   email: string | null;
+  theme: Theme;
   children: ReactNode;
 };
 
 // Side bar plus the page frame. From xl up the bar is a column on the left that
 // stays put while the page scrolls (and scrolls on its own if the window is
-// short): the wordmark, the sections, then the account at the foot. Below xl it
-// is a top row whose Menu button shows the same nav. Each group's bold label sits
-// right over its own tabs with a rule above it, so a group's tabs never read as
-// part of the next.
-export default function AdminShell({ email, children }: AdminShellProps) {
+// short): the wordmark, the sections, then the theme and the account at the
+// foot. Below xl it is a top row whose Menu button shows the same nav. Each
+// group's bold label sits right over its own tabs with a rule above it, so a
+// group's tabs never read as part of the next.
+export default function AdminShell({ email, theme, children }: AdminShellProps) {
   return (
     <>
       <a
@@ -59,7 +62,8 @@ export default function AdminShell({ email, children }: AdminShellProps) {
                 </div>
               ))}
             </nav>
-            <div className="flex items-center gap-3 border-t border-line px-3 pt-4 xl:mt-auto xl:flex-col xl:items-stretch">
+            <div className="flex flex-wrap items-center gap-3 border-t border-line px-3 pt-4 xl:mt-auto xl:flex-col xl:flex-nowrap xl:items-stretch">
+              <ThemeSwitch initial={theme} />
               {email && (
                 <p className="min-w-0 flex-1 truncate text-sm text-muted xl:flex-none" title={email}>
                   {email}
